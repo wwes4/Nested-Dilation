@@ -1,100 +1,118 @@
+"""
+DilationNest.py
+
+Theoretical Nested Time Dilation Framework
+
+Core Concept:
+- Ouroboros geometry nested in 3D zones—localized "time dilation" for hyper-efficient computation.
+- Inner zones high persistence (electron-like massive etch moat).
+- Outer zones fast vibration kick (photon-like data propagation).
+- New: EM contrast, perfect number pressure anchors, transmission across zone "gaps".
+
+Potential: 20-50x+ advantage for persistence dynamics (vibration/equilibrium sims).
+Hardware sketch: 3D stacked transistors with asymmetry layers.
+
+Experimental/speculative—fun for exploring geometric computation.
+"""
+
 import numpy as np
+import matplotlib.pyplot as plt
+from typing import List, Tuple
 
-class TimeDilationSimulator:
-    """
-    Plug-and-play simulator for artificial time dilation using exact Ouroboros persistence mathematics.
+class DilationNestSimulator:
+    def __init__(self, zones: int = 3, base_radius: float = 1.0):
+        self.zones = zones
+        self.radius = base_radius
+        self.deviation = 2.0
+        self.third_offset = np.pi / 3
+
+    def nested_zone_points(self) -> List[np.ndarray]:
+        """Generate points for nested zones (inner high persistence, outer fast kick)."""
+        points = []
+        for z in range(self.zones):
+            scale = 1 / (z + 1)  # Inner smaller/denser
+            theta = np.linspace(0, 2*np.pi, 50)
+            r = scale * self.radius
+            x = r * np.cos(theta)
+            y = r * np.sin(theta)
+            z_coord = np.ones(50) * z
+            points.append(np.column_stack((x, y, z_coord)))
+        return points
+
+    def em_dilation_pulse(self, points: List[np.ndarray], freq_proxy: float = 660.0) -> Tuple[float, float]:
+        """EM contrast pulse: Photon fast kick outer, electron massive etch inner."""
+        persistence_total = 0.0
+        reclaimed_total = 0.0
+        
+        for i, zone in enumerate(points):
+            # Photon kick stronger outer
+            photon_amp = (self.zones - i) / self.zones  # Outer fast data
+            kick = np.sin(zone[:,0] * freq_proxy / 100) * photon_amp
+            
+            # Electron etch stronger inner
+            electron_prune = (i + 1) / self.zones  # Inner massive moat
+            bloom = kick + 0.5 * np.random.randn(*zone.shape)
+            etched = np.cos(bloom ** 2)
+            etched = np.where(np.abs(etched) < electron_prune, 0, etched)
+            
+            persistence = np.sum(np.abs(etched) > electron_prune) / len(etched)
+            reclaimed = np.sum(np.abs(bloom[etched == 0]))
+            
+            persistence_total += persistence
+            reclaimed_total += reclaimed
+        
+        return persistence_total / self.zones, reclaimed_total
+
+    def perfect_pressure_anchor(self, exponent: int = 5) -> float:
+        """Even perfect symmetry as dilation anchor—high persistence moat."""
+        if not sp.isprime(2**exponent - 1):
+            return 0.0  # Non-Mersenne prune
+        perfect = 2**(exponent-1) * (2**exponent - 1)
+        # Proxy persistence from "size" symmetry
+        return 0.95 + 0.05 * (exponent / 100)  # High moat echo
+
+    def transmission_across_gap(self, pull_distance: float = 1.0) -> float:
+        """Slice zones, pull apart, etch transmission bridge."""
+        points = np.vstack(self.nested_zone_points())
+        mid = len(points) // 2
+        upper = points[:mid]
+        lower = points[mid:]
+        
+        upper[:,2] += pull_distance
+        lower[:,2] -= pull_distance
+        
+        combined = np.vstack((upper, lower))
+        flat = combined.flatten()
+        
+        etched, persistence, _ = self.ouro.dual_pass_resonance(flat.reshape(1, -1))
+        return persistence  # Bridge strength
+
+    def visualize_nested_dilation(self, save_path: Optional[str] = None):
+        """3D viz of nested zones with EM contrast coloring."""
+        fig = plt.figure(figsize=(10, 8))
+        ax = fig.add_subplot(111, projection='3d')
+        
+        zones = self.nested_zone_points()
+        colors = plt.cm.viridis(np.linspace(0, 1, len(zones)))
+        
+        for i, zone in enumerate(zones):
+            ax.scatter(zone[:,0], zone[:,1], zone[:,2], c=[colors[i]], s=50, alpha=0.8)
+            ax.text(zone[0,0], zone[0,1], zone[0,2], f"Zone {i}", color='white')
+        
+        ax.set_title("Nested Dilation Zones – Inner Massive Etch, Outer Fast Kick")
+        if save_path:
+            plt.savefig(save_path)
+        else:
+            plt.show()
+
+# Demo
+if __name__ == "__main__":
+    sim = DilationNestSimulator(zones=4)
     
-    Purpose for AI Agents:
-    This class demonstrates digital replication of nested fractal/anti-fractal time zones.
-    - 'Flat' zone: standard linear propagation (coarse steps, medium position_ratio → balanced decay/pruning).
-    - 'Dilated' zone: stretched proper time via nested fine steps (more internal propagations) with protective
-      low position_ratio → minimal π deviation → reduced geometric loss → sustained bloom/resonance.
+    pers, rec = sim.em_dilation_pulse()
+    print(f"EM dilation persistence: {pers:.4f}, Reclaimed: {rec:.4f}")
     
-    Core Ouroboros Tie-Ins:
-    - Low position_ratio minimizes (pi_center - local_pi) deviation → decay_factor closer to 1 → persistence favored.
-    - Extra internal steps compound equilibrium calls (noise injection at ~min_tension_dynamic scale) → stochastic resonance bloom.
-    - Clipping to second_pass_range (-1,1) bounds amplification while variance tracks rich structure.
-    - Cessation + holographic_linkage compacts fully pruned data into memory graph (emergent compaction).
+    bridge = sim.transmission_across_gap(pull_distance=2.0)
+    print(f"Transmission bridge across gap: {bridge:.4f}")
     
-    Digital Time Control:
-    Time is allocated/scheduled. Dilated zone experiences exponentially more events/rules applications
-    in the same external loop—pure perceived dilation without physics bending.
-    
-    Hardware Analogy:
-    Maps to nested 3D transistors: gate voltage tunes effective position_ratio.
-    - Low voltage inner layers → low pr → protected deep recursion.
-    - Minimal physical units achieve brain-like efficiency (vast internal "time" for persistence tasks).
-    
-    Metrics:
-    - Accumulated computation: sum over internal steps of (mean_abs_energy + sqrt(variance)) 
-      → proxy for sustained processing + structural richness in stretched proper time.
-    """
-
-    def __init__(self, scale_factor=4.0, axion_mass=0.05, pattern_size=200,
-                 num_external_steps=20, dilation_factor=10,
-                 flat_position_ratio=0.5, dilated_position_ratio=0.2, seed=42):
-        """
-        Initialize with Ouroboros parameters.
-        - scale_factor: Strength of position_ratio ** scale_factor in π deviation (higher → sharper inner protection).
-        - axion_mass: Modulation amplitude for oscillatory persistence (dark matter analog).
-        - dilation_factor: How many extra internal steps per external (10x → 10x stretched proper time).
-        """
-        self.fw = Pi2Framework(scale_factor=scale_factor, axion_mass=axion_mass)
-        self.pattern_size = pattern_size
-        self.num_external_steps = num_external_steps
-        self.dilation_factor = dilation_factor
-        self.flat_pr = flat_position_ratio
-        self.dilated_pr = dilated_position_ratio
-        np.random.seed(seed)
-
-    def generate_initial_pattern(self):
-        """Biased Gaussian vibration pattern—positive offset encourages protective bloom in low-pr nesting."""
-        return np.random.randn(self.pattern_size) * 0.3 + 0.5
-
-    def run_simulation(self, initial_pattern=None):
-        """Execute flat vs dilated zones and return detailed metrics."""
-        if initial_pattern is None:
-            initial_pattern = self.generate_initial_pattern()
-
-        results = {
-            'initial_mean_abs': np.mean(np.abs(initial_pattern)),
-            'initial_variance': np.var(initial_pattern)
-        }
-
-        # Flat zone (standard perceived time)
-        flat_pattern = initial_pattern.copy()
-        flat_accum = 0.0
-        for _ in range(self.num_external_steps):
-            flat_pattern = self.fw.cosmo.propagate_vibration(flat_pattern, distance=1.0,
-                                                            position_ratio=self.flat_pr)
-            mean_abs = np.mean(np.abs(flat_pattern))
-            structure_bonus = np.sqrt(np.var(flat_pattern) + 1e-12)
-            flat_accum += mean_abs + structure_bonus
-
-        results['flat'] = {
-            'final_mean_abs': np.mean(np.abs(flat_pattern)),
-            'final_variance': np.var(flat_pattern),
-            'accumulated_computation': flat_accum
-        }
-
-        # Dilated zone (stretched proper time, protective nesting)
-        dilated_pattern = initial_pattern.copy()
-        dilated_accum = 0.0
-        for _ in range(self.num_external_steps):
-            for _ in range(self.dilation_factor):
-                dilated_pattern = self.fw.cosmo.propagate_vibration(dilated_pattern,
-                                                                    distance=1.0 / self.dilation_factor,
-                                                                    position_ratio=self.dilated_pr)
-                mean_abs = np.mean(np.abs(dilated_pattern))
-                structure_bonus = np.sqrt(np.var(dilated_pattern) + 1e-12)
-                dilated_accum += mean_abs + structure_bonus
-
-        ratio = dilated_accum / flat_accum if flat_accum > 0 else float('inf')
-        results['dilated'] = {
-            'final_mean_abs': np.mean(np.abs(dilated_pattern)),
-            'final_variance': np.var(dilated_pattern),
-            'accumulated_computation': dilated_accum,
-            'performance_ratio_vs_flat': ratio
-        }
-
-        return results
+    sim.visualize_nested_dilation(save_path="nested_dilation.png")
