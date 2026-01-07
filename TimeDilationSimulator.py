@@ -3,11 +3,8 @@ DilationNest.py
 
 Theoretical Nested Time Dilation Framework
 
-Core Concept:
-- Ouroboros geometry nested in 3D zones—localized "time dilation" for hyper-efficient computation.
-- Inner zones high persistence (electron-like massive etch moat).
-- Outer zones fast vibration kick (photon-like data propagation).
-- New: EM contrast, perfect number pressure anchors, transmission across zone "gaps".
+Core: Ouroboros zones nested in 3D—inner high persistence (electron etch moat), outer fast vibration (photon data kick).
+New: EM contrast, perfect pressure anchors, transmission across zone "gaps", expansion theories (Big Ring center layer in double Mobius fold).
 
 Potential: 20-50x+ advantage for persistence dynamics (vibration/equilibrium sims).
 Hardware sketch: 3D stacked transistors with asymmetry layers.
@@ -17,14 +14,13 @@ Experimental/speculative—fun for exploring geometric computation.
 
 import numpy as np
 import matplotlib.pyplot as plt
-from typing import List, Tuple
+from typing import List, Tuple, Optional
+from Ouroboros import OuroborosFramework
 
 class DilationNestSimulator:
-    def __init__(self, zones: int = 3, base_radius: float = 1.0):
+    def __init__(self, zones: int = 3):
         self.zones = zones
-        self.radius = base_radius
-        self.deviation = 2.0
-        self.third_offset = np.pi / 3
+        self.ouro = OuroborosFramework()  # Reuse derived params (exact boundary, deviation from density)
 
     def nested_zone_points(self) -> List[np.ndarray]:
         """Generate points for nested zones (inner high persistence, outer fast kick)."""
@@ -32,7 +28,7 @@ class DilationNestSimulator:
         for z in range(self.zones):
             scale = 1 / (z + 1)  # Inner smaller/denser
             theta = np.linspace(0, 2*np.pi, 50)
-            r = scale * self.radius
+            r = scale * self.ouro.radius
             x = r * np.cos(theta)
             y = r * np.sin(theta)
             z_coord = np.ones(50) * z
@@ -46,12 +42,12 @@ class DilationNestSimulator:
         
         for i, zone in enumerate(points):
             # Photon kick stronger outer
-            photon_amp = (self.zones - i) / self.zones  # Outer fast data
+            photon_amp = (self.zones - i) / self.zones
             kick = np.sin(zone[:,0] * freq_proxy / 100) * photon_amp
             
             # Electron etch stronger inner
-            electron_prune = (i + 1) / self.zones  # Inner massive moat
-            bloom = kick + 0.5 * np.random.randn(*zone.shape)
+            electron_prune = (i + 1) / self.zones
+            bloom = kick + self.ouro.noise_level * np.random.randn(*zone.shape)
             etched = np.cos(bloom ** 2)
             etched = np.where(np.abs(etched) < electron_prune, 0, etched)
             
@@ -63,16 +59,13 @@ class DilationNestSimulator:
         
         return persistence_total / self.zones, reclaimed_total
 
-    def perfect_pressure_anchor(self, exponent: int = 5) -> float:
-        """Even perfect symmetry as dilation anchor—high persistence moat."""
-        if not sp.isprime(2**exponent - 1):
-            return 0.0  # Non-Mersenne prune
-        perfect = 2**(exponent-1) * (2**exponent - 1)
-        # Proxy persistence from "size" symmetry
-        return 0.95 + 0.05 * (exponent / 100)  # High moat echo
+    def perfect_pressure_anchor(self) -> float:
+        """Even perfect symmetry as dilation anchor—high persistence moat from derived deviation."""
+        # Proxy from deviation symmetry (high moat echo)
+        return 0.95 + 0.05 * (self.ouro.deviation / np.pi)
 
     def transmission_across_gap(self, pull_distance: float = 1.0) -> float:
-        """Slice zones, pull apart, etch transmission bridge."""
+        """Slice zones, pull apart, etch transmission bridge (data across voids)."""
         points = np.vstack(self.nested_zone_points())
         mid = len(points) // 2
         upper = points[:mid]
@@ -85,7 +78,7 @@ class DilationNestSimulator:
         flat = combined.flatten()
         
         etched, persistence, _ = self.ouro.dual_pass_resonance(flat.reshape(1, -1))
-        return persistence  # Bridge strength
+        return persistence
 
     def visualize_nested_dilation(self, save_path: Optional[str] = None):
         """3D viz of nested zones with EM contrast coloring."""
